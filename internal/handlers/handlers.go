@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
+	"taskmanagerapi/internal/utils"
 )
 
 // NewRouter() gives us a pointer to a Router Struct which is mapped to a HandleFunc
@@ -29,12 +29,36 @@ func (r *Router) Handle(method, path string, handler HandlerFunc) {
 
 // Handles Signup
 func HandleSignup(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Signup handler called!")
+	if r.Method != "POST" {
+		utils.SendErrorResponse(w, http.StatusMethodNotAllowed, "POST Method only allowed")
+		return
+	}
+	var request SignupRequest
+	err := utils.ReadJSONBody(r, &request)
+	if err != nil {
+		utils.SendErrorResponse(w, http.StatusBadRequest, "Invalid JSON Body")
+		return
+	}
+
+	// Sending confirmation to the User
+	data := map[string]string{"message": "User signed up", "username": request.Username}
+	utils.SendJSONResponse(w, http.StatusOK, true, data)
 }
 
 // Handles Create Task
 func HandleCreateTask(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Create Task handler called!")
+	if r.Method != "POST" {
+		utils.SendErrorResponse(w, http.StatusMethodNotAllowed, "POST Method only allowed")
+		return
+	}
+	params := utils.ParseURLParams(r)
+	taskID := ""
+	if len(params) > 2 {
+		taskID = params[2]
+	}
+
+	data := map[string]string{"message": "Task created", "task_id": taskID}
+	utils.SendJSONResponse(w, http.StatusOK, true, data)
 }
 
 // This method is to verify if the route exists and only then will it redirect

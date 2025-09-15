@@ -9,7 +9,7 @@ import (
 func main() {
 	// Create an Instance and add Keys to Map routes
 	router := handlers.NewRouter()
-	router.Handle("GET", "/users/signup", handlers.HandleSignup)
+	router.Handle("POST", "/users/signup", handlers.HandleSignup)
 	router.Handle("POST", "/tasks/create", handlers.HandleCreateTask)
 
 	// Server listening on port 3000
